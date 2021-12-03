@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upsource-ccs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upsource-ccs
+  template:
+    metadata:
+      labels:
+        app: upsource-ccs
+    spec:
+      containers:
+        - name: upsource-ccs
+          image: jetbrains/upsource:2020.1.1883
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: regcred
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: upsource-ccs
+spec:
+  selector:
+    app: upsource-ccs
+  ports:
+    - port: 8080
+  type: ClusterIP
+
+

@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upsource
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upsource
+  template:
+    metadata:
+      labels:
+        app: upsource
+    spec:
+      containers:
+        - name: upsource
+          image: beck33/upsource-test:0.051
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /opt/upsource-disk
+              name: upsource-disk
+      volumes:
+        - name: upsource-disk
+          persistentVolumeClaim:
+            claimName: upsource-disk
+      nodeSelector:
+        dedicated: upsource
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          effect: NoSchedule
+          value: upsource
+      restartPolicy: Always
+#      imagePullSecrets:
+#        - name: regcred
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: upsource
+spec:
+  selector:
+    app: upsource
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: upsource-disk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+

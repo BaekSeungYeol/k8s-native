@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-native
+spec:
+  selector:
+    matchLabels:
+      app: k8s-native
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: k8s-native
+    spec:
+
+      terminationGracePeriodSeconds: 30
+      containers:
+        - image: k8s-native
+          imagePullPolicy: Always
+          name: k8s-native
+          ports:
+            - containerPort: 8080
+          # command: ["/bin/sh", "-c", "sleep 1000"]
+          lifecycle:
+            preStop:
+              httpGet:
+                port: 8080
+                path: /unhealthy
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/liveness
+            initialDelaySeconds: 10
+            periodSeconds: 1
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/readiness
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      imagePullSecrets:
+        - name: test
+      restartPolicy: Always
+
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-native
+spec:
+  selector:
+    app: k8s-native
+  ports:
+    - port: 8080
+  type: ClusterIP

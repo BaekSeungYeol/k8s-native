@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-native
+  labels:
+    app: k8s-native
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: k8s-native
+      labels:
+        app: k8s-native
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - k8s-native
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: k8s-native
+          image: k8s-native
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            failureThreshold: 5
+            periodSeconds: 10
+          readinessProbe:
+              httpGet:
+                path: /actuator/health/readiness
+                port: 8080
+              initialDelaySeconds: 10
+              periodSeconds: 10
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: test
+  selector:
+    matchLabels:
+      app: k8s-native
+
+---
+
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: k8s-native
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: k8s-native

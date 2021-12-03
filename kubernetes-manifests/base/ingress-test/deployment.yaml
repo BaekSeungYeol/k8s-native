@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: upsource-ingress
+spec:
+  rules:
+    - host: upsource.connected-car.io
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: upsource
+              servicePort: 8080
+  tls:
+    - hosts:
+        - upsource.connected-car.io
+      secretName: star-connected-car-io

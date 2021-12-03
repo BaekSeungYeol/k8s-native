@@ -1,0 +1,4 @@
+resources:
+  - fault-deployment.yaml
+  - service.yaml
+  - redis-deployment.yaml

@@ -1,0 +1,6 @@
+resources:
+  - deploy-cpu.yaml
+  - deploy-hpa.yaml
+
+# different deployment for each profile
+

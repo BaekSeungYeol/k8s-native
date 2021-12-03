@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upsource-default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upsource-default
+  template:
+    metadata:
+      labels:
+        app: upsource-default
+    spec:
+      containers:
+        - name: upsource-default
+          image: beck33/upsource-test:0.44
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: test
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: upsource-default
+spec:
+  selector:
+    app: upsource-default
+  ports:
+    - port: 8080
+  type: ClusterIP
+

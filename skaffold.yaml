@@ -1,0 +1,36 @@
+apiVersion: skaffold/v2beta10
+kind: Config
+metadata:
+  name: k8s-native
+build:
+  artifacts:
+    - image: k8s-native
+      kaniko: {}
+  cluster:
+    dockerConfig:
+      path: ~/.docker/config.json
+deploy:
+  kustomize:
+    paths: ["kubernetes-manifests/base"]
+
+profiles:
+  - name: liveness-readiness
+    deploy:
+      kustomize:
+        paths: [ "kubernetes-manifests/base/liveness" ]
+  - name: graceful-shutdown
+    deploy:
+      kustomize:
+        paths: [ "kubernetes-manifests/base/graceful" ]
+  - name: fault-tolerance
+    deploy:
+      kustomize:
+        paths: [ "kubernetes-manifests/base/fault-tolerance" ]
+  - name: cpu-utilisation
+    deploy:
+      kustomize:
+        paths: [ "kubernetes-manifests/base/cpu-utilisation" ]
+  - name: configuration-secret
+    deploy:
+      kustomize:
+        paths: [ "kubernetes-manifests/base/configuration-secret" ]

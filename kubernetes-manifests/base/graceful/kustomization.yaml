@@ -1,0 +1,5 @@
+resources:
+  - graceful-deploy.yaml
+
+# different deployment for each profile
+

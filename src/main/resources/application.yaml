@@ -1,0 +1,25 @@
+spring:
+  config:
+    import: optional:/etc/config/
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+server:
+  port: 8080
+  shutdown: graceful
+
+
+management:
+  endpoint:
+    health:
+      group:
+        readiness:
+          include:
+            - readinessState
+        liveness:
+          include:
+            - livenessState
+      probes:
+        enabled: true
+
+
